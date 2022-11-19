@@ -33,6 +33,7 @@ type CreateRequest struct {
 
 	// 群模式，可选值：
 	// group
+	// topic
 	ChatMode string
 
 	// 群类型，可选值：
