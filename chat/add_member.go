@@ -1,8 +1,6 @@
 package chat
 
 import (
-	"fmt"
-
 	"github.com/go-zoox/feishu/client"
 	"github.com/go-zoox/fetch"
 )
@@ -34,9 +32,6 @@ type AddMemberResponse struct {
 }
 
 func AddMember(client client.Client, req *AddMemberRequest) (resp *AddMemberResponse, err error) {
-
-	fmt.Println("id_list:", req.IDList)
-
 	err = client.Request(AddMemberAPI, &fetch.Config{
 		Method: "POST",
 		Params: map[string]string{

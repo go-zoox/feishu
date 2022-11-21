@@ -1,8 +1,6 @@
 package chat
 
 import (
-	"fmt"
-
 	"github.com/go-zoox/feishu/client"
 	"github.com/go-zoox/fetch"
 )
@@ -29,9 +27,6 @@ type RemoveMemberResponse struct {
 }
 
 func RemoveMember(client client.Client, req *RemoveMemberRequest) (resp *RemoveMemberResponse, err error) {
-
-	fmt.Println("id_list:", req.IDList)
-
 	err = client.Request(RemoveMemberAPI, &fetch.Config{
 		Method: "DELETE",
 		Params: map[string]string{
