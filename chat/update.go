@@ -5,46 +5,60 @@ import (
 	"github.com/go-zoox/fetch"
 )
 
-const CreateAPI = "https://open.feishu.cn/open-apis/im/v1/chats"
+const UpdateAPI = "https://open.feishu.cn/open-apis/im/v1/chats/:chat_id"
 
-type CreateRequest struct {
+type UpdateRequest struct {
+	// 群 ID
+	ChatID string `json:"chat_id"`
+
+	// 用户 ID 类型
+	// 示例值："open_id"
+	// 可选值有：
+	// open_id：用户的 open id
+	// union_id：用户的 union id
+	// user_id：用户的 user id
+	UserIDType string `json:"user_id_type"`
+
 	// 群名称
-	Name string
+	Name string `json:"name"`
 
 	// 群描述
-	Description string
+	Description string `json:"description"`
 
 	// 群头像对应的 Image Key，可通过上传图片获取（注意：上传图片的 image_type 需要指定为 avatar）
 	// 示例值："default-avatar_44ae0ca3-e140-494b-956f-78091e348435"
 	// 上传图片：https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/image/create
-	Avatar string
+	Avatar string `json:"avatar"`
+
+	// 邀请用户或机器人入群权限
+	// 可选值有：
+	// only_owner：仅群主和管理员
+	// all_members：所有成员
+	AddMemberPermission string `json:"add_member_permission"`
+
+	// 群分享权限
+	// 可选值有：
+	// allowed：允许
+	// not_allowed：不允许
+	ShareCardPermission string `json:"share_card_permission"`
+
+	// at 所有人权限
+	// 可选值有：
+	// only_owner：仅群主和管理员
+	// all_members：所有成员
+	// 示例值："all_members"
+	AtAllPermission string `json:"at_all_permission"`
+
+	// 群编辑权限
+	// 可选值有：
+	// only_owner：仅群主和管理员
+	// all_members：所有成员
+	// 示例值："all_members"
+	EditPermission string `json:"edit_permission"`
 
 	// 创建群时指定的群主，不填时指定建群的机器人为群主。
 	// 群主 ID，ID值与查询参数中的 user_id_type 对应。
 	OwnerID string
-
-	// 创建群时邀请的群成员，id 类型为 user_id_type
-	// 最大长度：50
-	UserIDList []string
-
-	// 创建群时邀请的群机器人
-	// 最大长度：5
-	BotIDList []string
-
-	// 群模式，可选值：
-	// group
-	// topic
-	ChatMode string
-
-	// 群类型，可选值：
-	// private - 私有群
-	// public - 公开群
-	ChatType string
-
-	// 是否是外部群；若群组需要邀请不同租户的用户或机器人，请指定为外部群；
-	// 示例值：false
-	// 默认值：false
-	External string `json:"external"`
 
 	// 入群消息可见性
 	// 可选值有：
@@ -68,10 +82,14 @@ type CreateRequest struct {
 	// approval_required：需要审批
 	// 示例值："no_approval_required"
 	MembershipApproval string `json:"membership_approval"`
+
+	// 群类型，可选值：
+	// private - 私有群
+	// public - 公开群
+	ChatType string
 }
 
-type CreateResponse struct {
-	ChatID      string `json:"chat_id"`
+type UpdateResponse struct {
 	Avatar      string `json:"avatar"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -84,38 +102,39 @@ type CreateResponse struct {
 	AddMemberPermission    string `json:"add_member_permission"`
 	ShareCardPermission    string `json:"share_card_permission"`
 	AtAllPermission        string `json:"at_all_permission"`
-	ChatMode               string `json:"chat_mode"`
 	ChatType               string `json:"chat_type"`
-	ChatTag                string `json:"chat_tag"`
-	External               bool   `json:"external"`
-	TenantKey              string `json:"tenant_key"`
 	JoinMessageVisibility  string `json:"join_message_visibility"`
 	LeaveMessageVisibility string `json:"leave_message_visibility"`
 	MembershipApproval     string `json:"membership_approval"`
-	ModerationPermission   string `json:"moderation_permission"`
 }
 
-func Create(client client.Client, req *CreateRequest) (resp *CreateResponse, err error) {
-	err = client.Request(CreateAPI, &fetch.Config{
-		Method: "POST",
+func Update(client client.Client, req *UpdateRequest) (resp *UpdateResponse, err error) {
+	err = client.Request(UpdateAPI, &fetch.Config{
+		Method: "PUT",
+		Params: map[string]string{
+			"chat_id": req.ChatID,
+		},
+		Query: map[string]string{
+			"user_id_type": req.UserIDType,
+		},
 		Body: map[string]any{
-			"name":                     req.Name,
-			"description":              req.Description,
-			"avatar":                   req.Avatar,
-			"owner_id":                 req.OwnerID,
-			"user_id_list":             req.UserIDList,
-			"bot_id_list":              req.BotIDList,
-			"chat_mode":                req.ChatMode,
-			"chat_type":                req.ChatType,
-			"external":                 req.External,
+			"name":                  req.Name,
+			"description":           req.Description,
+			"avatar":                req.Avatar,
+			"add_member_permission": req.AddMemberPermission,
+			"share_card_permission": req.ShareCardPermission,
+			"at_all_permission":     req.AtAllPermission,
+			"edit_permission":       req.EditPermission,
+			// "owner_id":                 req.OwnerID,
 			"join_message_visibility":  req.JoinMessageVisibility,
 			"leave_message_visibility": req.LeaveMessageVisibility,
 			"membership_approval":      req.MembershipApproval,
+			"chat_type":                req.ChatType,
 		},
 	}, &resp)
 	return
 
-	// response, err := fetch.Post(CreateAPI, &fetch.Config{
+	// response, err := fetch.Post(UpdateAPI, &fetch.Config{
 	// 	Headers: map[string]string{
 	// 		"Content-Type":  "application/json; charset=utf-8",
 	// 		"Authorization": fmt.Sprintf("Bearer %s", accessToken),
@@ -146,7 +165,7 @@ func Create(client client.Client, req *CreateRequest) (resp *CreateResponse, err
 	// 	return nil, fmt.Errorf("[%d] %s", code, msg)
 	// }
 
-	// var res CreateResponse
+	// var res UpdateResponse
 	// if err := json.Unmarshal([]byte(response.Get("data").String()), &res); err != nil {
 	// 	return nil, fmt.Errorf("json unmarshal: %s", err)
 	// }

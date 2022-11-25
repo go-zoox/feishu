@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"os"
 	"testing"
 
 	"github.com/go-zoox/core-utils/fmt"
@@ -9,7 +10,7 @@ import (
 	"github.com/go-zoox/feishu/config"
 )
 
-func TestCreate(t *testing.T) {
+func TestUpdateAnnouncement(t *testing.T) {
 	var cfg config.Config
 	if err := dotenv.Load(&cfg); err != nil {
 		t.Fatal(err)
@@ -21,17 +22,20 @@ func TestCreate(t *testing.T) {
 		AppSecret: cfg.ApptSecret,
 	})
 
-	chat, err := Create(c, &CreateRequest{
-		Name: "test_from_go_zoox",
-		// OwnerId: "3gf84g45",
-		UserIDList: []string{
-			// "3gf84g45",
-			"ou_5bda2db8af1fb71fb75a5c1de92d680d",
+	fmt.Println("chat_id:", os.Getenv("CHAT_ID"))
+
+	announcement, err := UpdateAnnouncement(c, &UpdateAnnouncementRequest{
+		ChatID:   os.Getenv("CHAT_ID"),
+		Revision: "0",
+		Content: []string{
+			"测试1: line1",
+			"测试2: line 2",
+			"测试3: line 3",
 		},
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	fmt.PrintJSON("chat:", chat)
+	fmt.PrintJSON("announcement:", announcement)
 }
