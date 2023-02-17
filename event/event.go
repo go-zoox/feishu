@@ -4,6 +4,7 @@ import (
 	"github.com/go-zoox/core-utils/regexp"
 	"github.com/go-zoox/feishu/client"
 	"github.com/go-zoox/feishu/message"
+	"github.com/go-zoox/logger"
 )
 
 var chatRe, _ = regexp.New("^im.message")
@@ -168,11 +169,15 @@ func (e *EventRequest) OnChatReceiveMessage(client client.Client, handler Messag
 			return nil
 		}
 
-		_, err := message.Reply(client, &message.ReplyRequest{
-			MessageID: e.ChatID(),
-			Content:   content,
-			MsgType:   inferMessageTypeFromContent(content, msgType...),
+		_, err := message.Send(client, &message.SendRequest{
+			ReceiveIDType: "chat_id",
+			ReceiveID:     e.ChatID(),
+			MsgType:       inferMessageTypeFromContent(content, msgType...),
+			Content:       content,
 		})
+		if err != nil && len(msgType) == 0 {
+			logger.Warnf("failed to send message: %v, maybe not infer msgType correctly, you need set msgType", err)
+		}
 
 		return err
 	})
