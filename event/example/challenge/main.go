@@ -6,11 +6,11 @@ import (
 	"github.com/go-zoox/core-utils/fmt"
 	"github.com/go-zoox/feishu/event"
 	"github.com/go-zoox/zoox"
-	zd "github.com/go-zoox/zoox/default"
+	defaults "github.com/go-zoox/zoox/defaults"
 )
 
 func main() {
-	app := zd.Default()
+	app := defaults.Default()
 
 	app.Any("/v1/feishu/challenge", func(ctx *zoox.Context) {
 		var req event.ChallengeRequest

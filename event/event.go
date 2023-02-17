@@ -1,14 +1,33 @@
 package event
 
+import (
+	"github.com/go-zoox/core-utils/regexp"
+	"github.com/go-zoox/feishu/client"
+	"github.com/go-zoox/feishu/message"
+)
+
+var chatRe, _ = regexp.New("^im.message")
+
 type EventRequest struct {
 	// Scheme is api version, e.g. 2.0
 	Schema string             `json:"schema"`
 	Header EventRequestHeader `json:"header"`
 	Event  EventRequestBody   `json:"event"`
+
+	// @TODO chanllenge (feishu bad design in the same message)
+	// 未加密
+	Challenge string `json:"challenge"`
+	Tolen     string `json:"token"`
+	Type      string `json:"type"`
+	// 已加密
+	Encrypt string `json:"encrypt"`
 }
 
 type EventResponse struct {
 	Message string `json:"msg"`
+
+	// @TODO chanllenge (feishu bad design in the same message)
+	Challenge string `json:"challenge"`
 }
 
 type EventRequestHeader struct {
@@ -28,15 +47,7 @@ type EventRequestHeader struct {
 
 type EventRequestBody struct {
 	// Sender is the message sender
-	Sender struct {
-		SenderID struct {
-			OpenID  string `json:"open_id"`
-			UnionID string `json:"union_id"`
-			UserID  string `json:"user_id"`
-		}
-		SenderType string `json:"sender_type"`
-		TenantKey  string `json:"tenant_key"`
-	} `json:"sender"`
+	Sender  EventRequestSender `json:"sender"`
 	Message struct {
 		// ChatID is the chat room id, e.g. oc_7a9aa4739f81bd2e61108fecbe12bf93
 		ChatID string `json:"chat_id"`
@@ -47,19 +58,162 @@ type EventRequestBody struct {
 		// CreateTime is the creation time, e.g. 1676566565604
 		CreateTime string `json:"create_time"`
 		// Metions is the metions
-		Mentions []struct {
-			// Key is the mention key, e.g. @_user_1
-			Key string `json:"key"`
-			// Name is the mention name, e.g. Zero
-			Name string `json:"name"`
-			//
-			ID struct {
-				OpenID  string `json:"open_id"`
-				UnionID string `json:"union_id"`
-				UserID  string `json:"user_id"`
-			} `json:"id"`
-			//
-			TenantKey string `json:"tenant_key"`
-		} `json:"mentions"`
+		Mentions []EventRequestChatMention `json:"mentions"`
 	} `json:"message"`
+}
+
+type EventRequestSender struct {
+	SenderID struct {
+		OpenID  string `json:"open_id"`
+		UnionID string `json:"union_id"`
+		UserID  string `json:"user_id"`
+	}
+	SenderType string `json:"sender_type"`
+	TenantKey  string `json:"tenant_key"`
+}
+
+type EventRequestChatMention struct {
+	// Key is the mention key, e.g. @_user_1
+	Key string `json:"key"`
+	// Name is the mention name, e.g. Zero
+	Name string `json:"name"`
+	//
+	ID struct {
+		OpenID  string `json:"open_id"`
+		UnionID string `json:"union_id"`
+		UserID  string `json:"user_id"`
+	} `json:"id"`
+	//
+	TenantKey string `json:"tenant_key"`
+}
+
+func (e *EventRequest) IsChallenge() bool {
+	return e.Challenge != ""
+}
+
+func (e *EventRequest) IsChat() bool {
+	return chatRe.Match(e.EventType())
+}
+
+func (e *EventRequest) IsGroupChat() bool {
+	return e.ChatType() == "group"
+}
+
+func (e *EventRequest) IsP2pChat() bool {
+	return e.ChatType() == "p2p"
+}
+
+func (e *EventRequest) EventType() string {
+	return e.Header.EventType
+}
+
+func (e *EventRequest) ChatType() string {
+	return e.Event.Message.ChatType
+}
+
+func (e *EventRequest) ChatID() string {
+	return e.Event.Message.ChatID
+}
+
+func (e *EventRequest) Sender() EventRequestSender {
+	return e.Event.Sender
+}
+
+func (e *EventRequest) Mentions() []EventRequestChatMention {
+	return e.Event.Message.Mentions
+}
+
+// 接收消息
+//
+// - 机器人接收到用户发送的消息后触发此事件。
+//
+// - 注意事项:;- 需要开启[机器人能力](https://open.feishu.cn/document/uAjLw4CM/ugTN1YjL4UTN24CO1UjN/trouble-shooting/how-to-enable-bot-ability)，并订阅 ==消息与群组== 分类下的 ==接收消息v2.0== 事件才可接收推送;- 同时，将根据应用具备的权限，判断可推送的信息：;	- 当具备==获取用户发给机器人的单聊消息==权限或者==读取用户发给机器人的单聊消息（历史权限）==，可接收与机器人单聊会话中用户发送的所有消息;	- 当具备==获取群组中所有消息== 权限时，可接收与机器人所在群聊会话中用户发送的所有消息;	- 当具备==获取用户在群组中@机器人的消息== 权限或者==获取用户在群聊中@机器人的消息（历史权限）==，可接收机器人所在群聊中用户 @ 机器人的消息
+//
+// - 事件描述文档链接:https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/message/events/receive
+func (e *EventRequest) OnChatReceiveMessage(client client.Client, handler func(content string, reply func(content string) error) error) error {
+	if !e.IsChat() {
+		return nil
+	}
+
+	if e.EventType() != "im.message.receive_v1" {
+		return nil
+	}
+
+	return handler(e.Event.Message.Content, func(content string) error {
+		if content == "" {
+			return nil
+		}
+
+		_, err := message.Reply(client, &message.ReplyRequest{
+			MessageID: e.ChatID(),
+			Content:   content,
+			MsgType:   inferMessageTypeFromContent(content),
+		})
+
+		return err
+	})
+}
+
+// 机器人进群
+//
+// - 机器人被用户添加至群聊时触发此事件。
+//
+// - 注意事项：;- 需要开启[机器人能力](https://open.feishu.cn/document/uAjLw4CM/ugTN1YjL4UTN24CO1UjN/trouble-shooting/how-to-enable-bot-ability);- 需要订阅 ==消息与群组== 分类下的 ==机器人进群== 事件;- 事件会向进群的机器人进行推送;- 机器人邀请机器人不会触发事件
+//
+// - 事件描述文档链接:https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/chat-member-bot/events/added
+func (e *EventRequest) OnChatBotAddedToGroup(client client.Client, handler func(content string, reply func(content string) error) error) error {
+	if !e.IsChat() {
+		return nil
+	}
+
+	if e.EventType() != "im.chat.member.bot.added_v1" {
+		return nil
+	}
+
+	return handler(e.Event.Message.Content, func(content string) error {
+		if content == "" {
+			return nil
+		}
+
+		_, err := message.Reply(client, &message.ReplyRequest{
+			MessageID: e.ChatID(),
+			Content:   content,
+			MsgType:   inferMessageTypeFromContent(content),
+		})
+		return err
+	})
+}
+
+// 机器人被移出群
+//
+// - 机器人被移出群聊后触发此事件。
+//
+// - 注意事项：;- 需要开启[机器人能力](https://open.feishu.cn/document/uAjLw4CM/ugTN1YjL4UTN24CO1UjN/trouble-shooting/how-to-enable-bot-ability);- 需要订阅 ==消息与群组== 分类下的 ==机器人被移出群== 事件;- 事件会向被移出群的机器人进行推送
+//
+// - 事件描述文档链接:https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/chat-member-bot/events/deleted
+func (e *EventRequest) OnChatBotDeletedFromGroup(client client.Client, handler func(content string, reply func(content string) error) error) error {
+	if !e.IsChat() {
+		return nil
+	}
+
+	if e.EventType() != "im.chat.member.bot.deleted_v1" {
+		return nil
+	}
+
+	return handler(e.Event.Message.Content, func(content string) error {
+		if content == "" {
+			return nil
+		}
+
+		_, err := message.Reply(client, &message.ReplyRequest{
+			MessageID: e.ChatID(),
+			Content:   content,
+			MsgType:   inferMessageTypeFromContent(content),
+		})
+		return err
+	})
+}
+
+func inferMessageTypeFromContent(content string) string {
+	return "text"
 }
