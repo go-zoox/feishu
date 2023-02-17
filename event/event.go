@@ -143,6 +143,10 @@ func (e *EventRequest) Mentions() []EventRequestChatMention {
 	return e.Event.Message.Mentions
 }
 
+type MessageReply = func(content string, msgType ...string) error
+
+type MessageHandler = func(content string, request *EventRequest, reply MessageReply) error
+
 // 接收消息
 //
 // - 机器人接收到用户发送的消息后触发此事件。
@@ -150,7 +154,7 @@ func (e *EventRequest) Mentions() []EventRequestChatMention {
 // - 注意事项:;- 需要开启[机器人能力](https://open.feishu.cn/document/uAjLw4CM/ugTN1YjL4UTN24CO1UjN/trouble-shooting/how-to-enable-bot-ability)，并订阅 ==消息与群组== 分类下的 ==接收消息v2.0== 事件才可接收推送;- 同时，将根据应用具备的权限，判断可推送的信息：;	- 当具备==获取用户发给机器人的单聊消息==权限或者==读取用户发给机器人的单聊消息（历史权限）==，可接收与机器人单聊会话中用户发送的所有消息;	- 当具备==获取群组中所有消息== 权限时，可接收与机器人所在群聊会话中用户发送的所有消息;	- 当具备==获取用户在群组中@机器人的消息== 权限或者==获取用户在群聊中@机器人的消息（历史权限）==，可接收机器人所在群聊中用户 @ 机器人的消息
 //
 // - 事件描述文档链接:https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/message/events/receive
-func (e *EventRequest) OnChatReceiveMessage(client client.Client, handler func(content string, request *EventRequest, reply func(content string, msgType ...string) error) error) error {
+func (e *EventRequest) OnChatReceiveMessage(client client.Client, handler MessageHandler) error {
 	if !e.IsChat() {
 		return nil
 	}
@@ -181,7 +185,7 @@ func (e *EventRequest) OnChatReceiveMessage(client client.Client, handler func(c
 // - 注意事项：;- 需要开启[机器人能力](https://open.feishu.cn/document/uAjLw4CM/ugTN1YjL4UTN24CO1UjN/trouble-shooting/how-to-enable-bot-ability);- 需要订阅 ==消息与群组== 分类下的 ==机器人进群== 事件;- 事件会向进群的机器人进行推送;- 机器人邀请机器人不会触发事件
 //
 // - 事件描述文档链接:https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/chat-member-bot/events/added
-func (e *EventRequest) OnChatBotAddedToGroup(client client.Client, handler func(content string, reply func(content string, msgType ...string) error) error) error {
+func (e *EventRequest) OnChatBotAddedToGroup(client client.Client, handler MessageHandler) error {
 	if !e.IsChat() {
 		return nil
 	}
@@ -190,7 +194,7 @@ func (e *EventRequest) OnChatBotAddedToGroup(client client.Client, handler func(
 		return nil
 	}
 
-	return handler(e.Event.Message.Content, func(content string, msgType ...string) error {
+	return handler(e.Event.Message.Content, e, func(content string, msgType ...string) error {
 		if content == "" {
 			return nil
 		}
@@ -211,7 +215,7 @@ func (e *EventRequest) OnChatBotAddedToGroup(client client.Client, handler func(
 // - 注意事项：;- 需要开启[机器人能力](https://open.feishu.cn/document/uAjLw4CM/ugTN1YjL4UTN24CO1UjN/trouble-shooting/how-to-enable-bot-ability);- 需要订阅 ==消息与群组== 分类下的 ==机器人被移出群== 事件;- 事件会向被移出群的机器人进行推送
 //
 // - 事件描述文档链接:https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/chat-member-bot/events/deleted
-func (e *EventRequest) OnChatBotDeletedFromGroup(client client.Client, handler func(content string, reply func(content string, msgType ...string) error) error) error {
+func (e *EventRequest) OnChatBotDeletedFromGroup(client client.Client, handler MessageHandler) error {
 	if !e.IsChat() {
 		return nil
 	}
@@ -220,7 +224,7 @@ func (e *EventRequest) OnChatBotDeletedFromGroup(client client.Client, handler f
 		return nil
 	}
 
-	return handler(e.Event.Message.Content, func(content string, msgType ...string) error {
+	return handler(e.Event.Message.Content, e, func(content string, msgType ...string) error {
 		if content == "" {
 			return nil
 		}
