@@ -119,7 +119,9 @@ func (c *client) refreshAccessToken(reason error) (err error) {
 		return
 	}
 
-	logger.Infof("[feishu] refresh access token by reason: %s", reason)
+	if reason != nil {
+		logger.Infof("[feishu] refresh access token by reason: %s", reason)
+	}
 
 	c.accessToken, err = access_token.GetTenantAccessToken(c.cfg.AppID, c.cfg.AppSecret)
 	return
