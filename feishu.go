@@ -1,7 +1,9 @@
 package feishu
 
 import (
+	"github.com/go-zoox/feishu/bot"
 	"github.com/go-zoox/feishu/client"
+	"github.com/go-zoox/feishu/event"
 	"github.com/go-zoox/feishu/message"
 )
 
@@ -9,7 +11,9 @@ type Client interface {
 	// GetAppAccessToken() (string, error)
 	// GetTenanttAccessToken() (string, error)
 
+	Bot() bot.Bot
 	Message() message.Message
+	Event(request *event.EventRequest) event.Event
 }
 
 type Config = client.Config
@@ -25,4 +29,12 @@ func New(cfg *client.Config) Client {
 
 func (c *feishu) Message() message.Message {
 	return message.New(c.sdk)
+}
+
+func (c *feishu) Event(request *event.EventRequest) event.Event {
+	return event.New(c.sdk, request)
+}
+
+func (c *feishu) Bot() bot.Bot {
+	return bot.New(c.sdk)
 }

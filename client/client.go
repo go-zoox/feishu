@@ -9,7 +9,7 @@ import (
 )
 
 type Client interface {
-	Request(resource string, request *fetch.Config, response interface{}) error
+	Request(resource string, request *fetch.Config, response interface{}, dataKey ...string) error
 }
 
 type Config struct {
@@ -34,7 +34,12 @@ type client struct {
 	accessToken string
 }
 
-func (c *client) Request(resource string, request *fetch.Config, response interface{}) error {
+func (c *client) Request(resource string, request *fetch.Config, response interface{}, dataKey ...string) error {
+	dataKeyX := "data"
+	if len(dataKey) > 0 {
+		dataKeyX = dataKey[0]
+	}
+
 	if err := c.refreshAccessToken(); err != nil {
 		return fmt.Errorf("refresh access token failed(1): %s", err)
 	}
@@ -94,7 +99,7 @@ func (c *client) Request(resource string, request *fetch.Config, response interf
 		return fmt.Errorf("[status: %d] %s", resp.Status, resp.String())
 	}
 
-	if err := json.Unmarshal([]byte(resp.Get("data").String()), response); err != nil {
+	if err := json.Unmarshal([]byte(resp.Get(dataKeyX).String()), response); err != nil {
 		return fmt.Errorf("parse response failed: %s", err)
 	}
 
