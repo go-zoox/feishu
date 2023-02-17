@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-zoox/feishu/access_token"
 	"github.com/go-zoox/fetch"
+	"github.com/go-zoox/logger"
 )
 
 type Client interface {
@@ -40,7 +41,7 @@ func (c *client) Request(resource string, request *fetch.Config, response interf
 		dataKeyX = dataKey[0]
 	}
 
-	if err := c.refreshAccessToken(); err != nil {
+	if err := c.refreshAccessToken(nil); err != nil {
 		return fmt.Errorf("refresh access token failed(1): %s", err)
 	}
 
@@ -60,8 +61,12 @@ func (c *client) Request(resource string, request *fetch.Config, response interf
 	code := resp.Get("code").Int()
 	// https://open.feishu.cn/document/ukTMukTMukTM/ugjM14COyUjL4ITN
 	// 99991663 | tenant token invalid | tenant_access_token 无效，更新token
-	if code == 99991663 {
-		err = c.refreshAccessToken()
+	// 99991668 | token invalid | user_access_token无效，更新token。详情可参考API访问凭证概述
+	// 99991668 | user access token not support | 当前请求不支持user_access_token，请检查后重试
+
+	switch code {
+	case 99991663, 99991668:
+		err = c.refreshAccessToken(fmt.Errorf("invalid access token or token expired"))
 		if err != nil {
 			return fmt.Errorf("refresh access token failed(2): %s", err)
 		}
@@ -72,9 +77,10 @@ func (c *client) Request(resource string, request *fetch.Config, response interf
 		if err != nil {
 			return fmt.Errorf("retry failed: %s", err)
 		}
+
+		code = resp.Get("code").Int()
 	}
 
-	code = resp.Get("code").Int()
 	if code != 0 {
 		msg := resp.Get("msg").String()
 		var detail string
@@ -95,7 +101,9 @@ func (c *client) Request(resource string, request *fetch.Config, response interf
 		}
 
 		return fmt.Errorf("[%d] %s", code, msg)
-	} else if resp.Status != 200 {
+	}
+
+	if resp.Status != 200 {
 		return fmt.Errorf("[status: %d] %s", resp.Status, resp.String())
 	}
 
@@ -106,10 +114,12 @@ func (c *client) Request(resource string, request *fetch.Config, response interf
 	return nil
 }
 
-func (c *client) refreshAccessToken() (err error) {
-	if c.accessToken != "" {
+func (c *client) refreshAccessToken(reason error) (err error) {
+	if reason == nil && c.accessToken != "" {
 		return
 	}
+
+	logger.Infof("[feishu] refresh access token by reason: %s", reason)
 
 	c.accessToken, err = access_token.GetTenantAccessToken(c.cfg.AppID, c.cfg.AppSecret)
 	return
