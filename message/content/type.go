@@ -12,8 +12,8 @@ type ContentTypeText struct {
 
 // docs: https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/im-v1/message/create_json#45e0953e
 type ContentTypePost struct {
-	ZhCN ContentTypePostLanguage `json:"zh_cn"`
-	EnUS ContentTypePostLanguage `json:"en_us"`
+	ZhCN *ContentTypePostBody `json:"zh_cn,omitempty"`
+	EnUS *ContentTypePostBody `json:"en_us,omitempty"`
 }
 
 // docs: https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/im-v1/message/create_json#7111df05
@@ -26,50 +26,8 @@ type ContentTypeImage struct {
 //   - 配置卡片属性: https://open.feishu.cn/document/ukTMukTMukTM/uAjNwUjLwYDM14CM2ATN
 //   - 消息卡片搭建工具: https://open.feishu.cn/tool/cardbuilder?templateId=ctp_AAfWvP5y4jp2
 type ContentTypeInteractive struct {
-	Config struct {
-		EnableForward  bool `json:"enable_forward"`
-		UpdateMulti    bool `json:"update_multi"`
-		WideScreenMode bool `json:"wide_screen_mode"`
-	} `json:"config"`
-	Elements []struct {
-		Tag     string `json:"tag"`
-		Content string `json:"content"`
-		Href    struct {
-			UrlVal struct {
-				Url string `json:"url"`
-			} `json:"urlVal"`
-		} `json:"href"`
-		At struct {
-			Content string `json:"content"`
-			Tag     string `json:"tag"`
-		} `json:"at"`
-		ImgKey string `json:"img_key"`
-		Extra  struct {
-			Alt struct {
-				Content string `json:"content"`
-				Tag     string `json:"tag"`
-			} `json:"alt"`
-			ImgKey string `json:"img_key"`
-			Tag    string `json:"tag"`
-		} `json:"extra"`
-		Text struct {
-			Content string `json:"content"`
-			Tag     string `json:"tag"`
-		} `json:"text"`
-		Actions []struct {
-			Tag  string `json:"tag"`
-			Text struct {
-				Content string `json:"content"`
-				Tag     string `json:"tag"`
-			} `json:"text"`
-			Type string `json:"type"`
-			Url  string `json:"url"`
-		} `json:"actions"`
-		Elements []struct {
-			Content string `json:"content"`
-			Tag     string `json:"tag"`
-		} `json:"elements"`
-	} `json:"elements"`
+	Config   ContentTypeInteractiveConfig    `json:"config"`
+	Elements []ContentTypeInteractiveElement `json:"elements"`
 }
 
 // docs: https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/im-v1/message/create_json#55c61488
@@ -103,29 +61,77 @@ type ContentTypeSticker struct {
 	FileKey string `json:"file_key"`
 }
 
-type ContentTypePostLanguage struct {
-	Title   string `json:"title"`
-	Content [][]struct {
-		// text | a | at | img
-		Tag string `json:"tag"`
+type ContentTypePostBody struct {
+	Title   string                      `json:"title,omitempty"`
+	Content [][]ContentTypePostBodyItem `json:"content,omitempty"`
+}
 
-		// tag = text and a
-		Text string `json:"text,omitempty"`
+type ContentTypePostBodyItem struct {
+	// text | a | at | img
+	Tag string `json:"tag"`
 
-		// tag = a
-		Href string `json:"href,omitempty"`
+	// tag = text and a
+	Text string `json:"text,omitempty"`
 
-		// tag = at
-		UserID   string `json:"user_id,omitempty"`
-		UserName string `json:"user_name,omitempty"`
+	// tag = a
+	Href string `json:"href,omitempty"`
 
-		// tag = img | media
-		ImageKey string `json:"image_key,omitempty"`
+	// tag = at
+	UserID   string `json:"user_id,omitempty"`
+	UserName string `json:"user_name,omitempty"`
 
-		// tag = media
-		FileKey string `json:"file_key,omitempty"`
+	// tag = img | media
+	ImageKey string `json:"image_key,omitempty"`
 
-		// tag = emotion
-		EmojiType string `json:"emoji_type,omitempty"`
-	} `json:"content"`
+	// tag = media
+	FileKey string `json:"file_key,omitempty"`
+
+	// tag = emotion
+	EmojiType string `json:"emoji_type,omitempty"`
+}
+
+type ContentTypeInteractiveConfig struct {
+	EnableForward  bool `json:"enable_forward"`
+	UpdateMulti    bool `json:"update_multi"`
+	WideScreenMode bool `json:"wide_screen_mode"`
+}
+
+type ContentTypeInteractiveElement struct {
+	Tag     string `json:"tag"`
+	Content string `json:"content"`
+	Href    struct {
+		UrlVal struct {
+			Url string `json:"url"`
+		} `json:"urlVal"`
+	} `json:"href"`
+	At struct {
+		Content string `json:"content"`
+		Tag     string `json:"tag"`
+	} `json:"at"`
+	ImgKey string `json:"img_key"`
+	Extra  struct {
+		Alt struct {
+			Content string `json:"content"`
+			Tag     string `json:"tag"`
+		} `json:"alt"`
+		ImgKey string `json:"img_key"`
+		Tag    string `json:"tag"`
+	} `json:"extra"`
+	Text struct {
+		Content string `json:"content"`
+		Tag     string `json:"tag"`
+	} `json:"text"`
+	Actions []struct {
+		Tag  string `json:"tag"`
+		Text struct {
+			Content string `json:"content"`
+			Tag     string `json:"tag"`
+		} `json:"text"`
+		Type string `json:"type"`
+		Url  string `json:"url"`
+	} `json:"actions"`
+	Elements []struct {
+		Content string `json:"content"`
+		Tag     string `json:"tag"`
+	} `json:"elements"`
 }

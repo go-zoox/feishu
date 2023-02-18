@@ -6,6 +6,17 @@ import (
 )
 
 type ContentBuilder interface {
+	Build() (msgType, content string, err error)
+	Text(v *ContentTypeText) ContentBuilder
+	Post(v *ContentTypePost) ContentBuilder
+	Image(v *ContentTypeImage) ContentBuilder
+	Interactive(v *ContentTypeInteractive) ContentBuilder
+	ShareChat(v *ContentTypeShareChat) ContentBuilder
+	ShareUser(v *ContentTypeShareUser) ContentBuilder
+	Audio(v *ContentTypeAudio) ContentBuilder
+	Media(v *ContentTypeMedia) ContentBuilder
+	File(v *ContentTypeFile) ContentBuilder
+	Sticker(v *ContentTypeSticker) ContentBuilder
 }
 
 type contentBuilder struct {
@@ -18,7 +29,7 @@ func NewContent() ContentBuilder {
 }
 
 func (c *contentBuilder) Build() (msgType, content string, err error) {
-	contentByte, err := json.Marshal(content)
+	contentByte, err := json.Marshal(c.content)
 	if err != nil {
 		return "", "", err
 	}
