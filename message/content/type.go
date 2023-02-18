@@ -71,7 +71,8 @@ type ContentTypePostBodyItem struct {
 	Tag string `json:"tag"`
 
 	// tag = text and a
-	Text string `json:"text,omitempty"`
+	Text     string `json:"text,omitempty"`
+	UnEscape bool   `json:"unescape,omitempty"`
 
 	// tag = a
 	Href string `json:"href,omitempty"`
