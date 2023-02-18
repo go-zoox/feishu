@@ -1,0 +1,119 @@
+{
+  "templateId": "ctp_AAfWvP5y4jp2",
+  "content": {
+    "config": {
+      "wide_screen_mode": true
+    },
+    "elements": [
+      {
+        "content": "🔥 **抖音文创“双十一”全年最优惠最低价活动今日开启** 🔥 \n🔥 跨店每满300-30（可无限叠加）\n🔥 店铺优惠可以和平台满减叠加：满199-20（叠加跨店满减，可以满300-50哦）",
+        "href": {
+          "urlVal": {
+            "url": "https://open.feishu.cn/document/ukTMukTMukTM/uczM3QjL3MzN04yNzcDN"
+          }
+        },
+        "tag": "markdown"
+      },
+      {
+        "alt": {
+          "content": "",
+          "tag": "plain_text"
+        },
+        "img_key": "img_v2_c51c8edc-0231-4abd-bad4-4b75ffe9a22g",
+        "tag": "img"
+      },
+      {
+        "tag": "hr"
+      },
+      {
+        "extra": {
+          "alt": {
+            "content": "",
+            "tag": "plain_text"
+          },
+          "img_key": "img_v2_de1b5603-e617-4b6e-b904-3f8ef02086dg",
+          "tag": "img"
+        },
+        "tag": "div",
+        "text": {
+          "content": "**🎉  抖音小助手微粒积木**\n4mm微小颗粒，精雕细琢；细腻光滑，品质优良！\n原价69元，活动价**59元**。[查看详情>>](https://open.feishu.cn/document/ukTMukTMukTM/uczM3QjL3MzN04yNzcDN)",
+          "tag": "lark_md"
+        }
+      },
+      {
+        "tag": "hr"
+      },
+      {
+        "extra": {
+          "alt": {
+            "content": "",
+            "tag": "plain_text"
+          },
+          "img_key": "img_v2_8b999b9e-e792-4947-b5c4-e49d37f3980g",
+          "tag": "img"
+        },
+        "tag": "div",
+        "text": {
+          "content": "**🎉  抖音小助手开瓶器冰箱贴**\n创意造型，惟妙惟肖；卖萌开瓶两不误！\n原价59元，活动价仅需**39元**。 [查看详情>>](https://open.feishu.cn/document/ukTMukTMukTM/ukTNwUjL5UDM14SO1ATN)",
+          "tag": "lark_md"
+        }
+      },
+      {
+        "tag": "hr"
+      },
+      {
+        "content": "**🌟 特别福利：**\n下单加1元就送价值11元抖音热门梗文件夹，数量有限，每ID限1件",
+        "href": {
+          "urlVal": {
+            "url": "https://open.feishu.cn/document/ukTMukTMukTM/uczM3QjL3MzN04yNzcDN"
+          }
+        },
+        "tag": "markdown"
+      },
+      {
+        "actions": [
+          {
+            "tag": "button",
+            "text": {
+              "content": "立即抢购",
+              "tag": "plain_text"
+            },
+            "type": "primary",
+            "url": "https://open.feishu.cn/document/ukTMukTMukTM/uczM3QjL3MzN04yNzcDN"
+          },
+          {
+            "tag": "button",
+            "text": {
+              "content": "查看更多优惠券",
+              "tag": "plain_text"
+            },
+            "type": "default",
+            "url": "https://open.feishu.cn/document/ukTMukTMukTM/uczM3QjL3MzN04yNzcDN"
+          }
+        ],
+        "tag": "action"
+      },
+      {
+        "tag": "hr"
+      },
+      {
+        "elements": [
+          {
+            "content": "活动时间：2022年11月1日~2022年11月20日",
+            "tag": "plain_text"
+          }
+        ],
+        "tag": "note"
+      }
+    ],
+    "header": {
+      "template": "purple",
+      "title": {
+        "content": "🥳 抖音文创“双十一”年度大促",
+        "tag": "plain_text"
+      }
+    }
+  },
+  "mock_data": "{}",
+  "variables": []
+}

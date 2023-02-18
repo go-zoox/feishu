@@ -1,0 +1,50 @@
+{
+  "templateId": "ctp_AAfWvP5y4jp2",
+  "content": {
+    "config": {
+      "wide_screen_mode": true
+    },
+    "elements": [
+      {
+        "tag": "markdown",
+        "content": "这里是卡片文本，支持使用markdown标签设置文本格式。例如：\n*斜体* 、**粗体**、~~删除线~~、[文字链接](https://www.feishu.cn)、<at id=all></at>、<font color='red'> 彩色文本 </font>"
+      },
+      {
+        "alt": {
+          "content": "",
+          "tag": "plain_text"
+        },
+        "img_key": "img_v2_041b28e3-5680-48c2-9af2-497ace79333g",
+        "tag": "img"
+      },
+      {
+        "tag": "action",
+        "actions": [
+          {
+            "tag": "button",
+            "text": {
+              "tag": "plain_text",
+              "content": "这是跳转按钮"
+            },
+            "type": "primary",
+            "multi_url": {
+              "url": "https://feishu.cn",
+              "android_url": "",
+              "ios_url": "",
+              "pc_url": ""
+            }
+          }
+        ]
+      }
+    ],
+    "header": {
+      "template": "blue",
+      "title": {
+        "content": "这里是卡片标题",
+        "tag": "plain_text"
+      }
+    }
+  },
+  "mock_data": "{}",
+  "variables": []
+}
