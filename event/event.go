@@ -4,6 +4,7 @@ import (
 	"github.com/go-zoox/core-utils/regexp"
 	"github.com/go-zoox/feishu/client"
 	"github.com/go-zoox/feishu/message"
+	ct "github.com/go-zoox/feishu/message/content"
 	"github.com/go-zoox/logger"
 )
 
@@ -169,10 +170,15 @@ func (e *EventRequest) OnChatReceiveMessage(client client.Client, handler Messag
 			return nil
 		}
 
-		_, err := message.Send(client, &message.SendRequest{
+		msgTypeX, err := inferMessageTypeFromContent(content, msgType...)
+		if err != nil {
+			return err
+		}
+
+		_, err = message.Send(client, &message.SendRequest{
 			ReceiveIDType: "chat_id",
 			ReceiveID:     e.ChatID(),
-			MsgType:       inferMessageTypeFromContent(content, msgType...),
+			MsgType:       msgTypeX,
 			Content:       content,
 		})
 		if err != nil && len(msgType) == 0 {
@@ -204,10 +210,15 @@ func (e *EventRequest) OnChatBotAddedToGroup(client client.Client, handler Messa
 			return nil
 		}
 
-		_, err := message.Reply(client, &message.ReplyRequest{
+		msgTypeX, err := inferMessageTypeFromContent(content, msgType...)
+		if err != nil {
+			return err
+		}
+
+		_, err = message.Reply(client, &message.ReplyRequest{
 			MessageID: e.ChatID(),
+			MsgType:   msgTypeX,
 			Content:   content,
-			MsgType:   inferMessageTypeFromContent(content, msgType...),
 		})
 		return err
 	})
@@ -234,20 +245,25 @@ func (e *EventRequest) OnChatBotDeletedFromGroup(client client.Client, handler M
 			return nil
 		}
 
-		_, err := message.Send(client, &message.SendRequest{
+		msgTypeX, err := inferMessageTypeFromContent(content, msgType...)
+		if err != nil {
+			return err
+		}
+
+		_, err = message.Send(client, &message.SendRequest{
 			ReceiveID:     e.ChatID(),
 			Content:       content,
-			MsgType:       inferMessageTypeFromContent(content, msgType...),
+			MsgType:       msgTypeX,
 			ReceiveIDType: "chat_id",
 		})
 		return err
 	})
 }
 
-func inferMessageTypeFromContent(content string, msgType ...string) string {
+func inferMessageTypeFromContent(content string, msgType ...string) (string, error) {
 	if len(msgType) != 0 && msgType[0] != "" {
-		return msgType[0]
+		return msgType[0], nil
 	}
 
-	return "text"
+	return ct.InferContentMsgType(content)
 }
