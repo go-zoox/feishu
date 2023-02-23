@@ -41,7 +41,7 @@ type EventRequest struct {
 	// @TODO chanllenge (feishu bad design in the same message)
 	// 未加密
 	Challenge string `json:"challenge"`
-	Tolen     string `json:"token"`
+	Token     string `json:"token"`
 	Type      string `json:"type"`
 	// 已加密
 	Encrypt string `json:"encrypt"`
