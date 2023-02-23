@@ -8,6 +8,8 @@ import (
 	"github.com/go-zoox/logger"
 )
 
+// docs: https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/message/events/receive
+
 var chatRe, _ = regexp.New("^im.message")
 
 type Event interface {
@@ -71,6 +73,10 @@ type EventRequestBody struct {
 	// Sender is the message sender
 	Sender  EventRequestSender `json:"sender"`
 	Message struct {
+		// MessageID is the message id, e.g. om_5ce6d572455d361153b7cb51da133945
+		MessageID string `json:"message_id"`
+		// MessageType is the message type, e.g. text
+		MessageType string `json:"message_type"`
 		// ChatID is the chat room id, e.g. oc_7a9aa4739f81bd2e61108fecbe12bf93
 		ChatID string `json:"chat_id"`
 		// ChatType is the chat type, options: group | p2p, e.g. group
@@ -81,6 +87,10 @@ type EventRequestBody struct {
 		CreateTime string `json:"create_time"`
 		// Metions is the metions
 		Mentions []EventRequestChatMention `json:"mentions"`
+		// RootID is the root message id, e.g. om_5ce6d572455d361153b7cb5xxfsdfsdfdsf
+		RootID string `json:"root_id"`
+		// ParentID is the parent message id, e.g. om_5ce6d572455d361153b7cb5xxfsdfsdfdsf
+		ParentID string `json:"parent_id"`
 	} `json:"message"`
 }
 
