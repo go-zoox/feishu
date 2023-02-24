@@ -99,7 +99,7 @@ type EventRequestSender struct {
 		OpenID  string `json:"open_id"`
 		UnionID string `json:"union_id"`
 		UserID  string `json:"user_id"`
-	}
+	} `json:"sender_id"`
 	SenderType string `json:"sender_type"`
 	TenantKey  string `json:"tenant_key"`
 }
