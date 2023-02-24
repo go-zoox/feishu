@@ -3,6 +3,7 @@ package feishu
 import (
 	"github.com/go-zoox/feishu/bot"
 	"github.com/go-zoox/feishu/client"
+	"github.com/go-zoox/feishu/contact"
 	"github.com/go-zoox/feishu/event"
 	"github.com/go-zoox/feishu/message"
 )
@@ -29,6 +30,10 @@ func New(cfg *client.Config) Client {
 
 func (c *feishu) Message() message.Message {
 	return message.New(c.sdk)
+}
+
+func (c *feishu) Contact() contact.Contact {
+	return contact.New(c.sdk)
 }
 
 func (c *feishu) Event(request *event.EventRequest) event.Event {
