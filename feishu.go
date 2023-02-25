@@ -12,7 +12,11 @@ type Client interface {
 	// GetAppAccessToken() (string, error)
 	// GetTenanttAccessToken() (string, error)
 
+	//
 	Bot() bot.Bot
+
+	//
+	Contact() contact.Contact
 	Message() message.Message
 	Event(request *event.EventRequest) event.Event
 }
