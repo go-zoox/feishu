@@ -185,14 +185,32 @@ func (e *EventRequest) OnChatReceiveMessage(client client.Client, handler Messag
 			return err
 		}
 
-		_, err = message.Send(client, &message.SendRequest{
-			ReceiveIDType: "chat_id",
-			ReceiveID:     e.ChatID(),
-			MsgType:       msgTypeX,
-			Content:       content,
-		})
+		// _, err = message.Send(client, &message.SendRequest{
+		// 	ReceiveIDType: "chat_id",
+		// 	ReceiveID:     e.ChatID(),
+		// 	MsgType:       msgTypeX,
+		// 	Content:       content,
+		// })
+		// if err != nil && len(msgType) == 0 {
+		// 	logger.Warnf("failed to send message: %v, maybe not infer msgType correctly, you need set msgType", err)
+		// }
+
+		if e.IsP2pChat() {
+			_, err = message.Send(client, &message.SendRequest{
+				ReceiveIDType: "chat_id",
+				ReceiveID:     e.ChatID(),
+				MsgType:       msgTypeX,
+				Content:       content,
+			})
+		} else {
+			_, err = message.Reply(client, &message.ReplyRequest{
+				MessageID: e.Event.Message.MessageID,
+				MsgType:   msgTypeX,
+				Content:   content,
+			})
+		}
 		if err != nil && len(msgType) == 0 {
-			logger.Warnf("failed to send message: %v, maybe not infer msgType correctly, you need set msgType", err)
+			logger.Warnf("failed to reply message: %v, maybe not infer msgType correctly, you need set msgType", err)
 		}
 
 		return err
