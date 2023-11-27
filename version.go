@@ -1,4 +1,4 @@
 package feishu
 
 // Version is the version of this package.
-var Version = "1.3.11"
+var Version = "1.4.0"
