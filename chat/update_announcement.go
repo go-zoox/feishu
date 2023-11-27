@@ -79,6 +79,9 @@ func UpdateAnnouncement(client client.Client, req *UpdateAnnouncementRequest) (r
 
 	err = client.Request(UpdateAnnouncementAPI, &fetch.Config{
 		Method: "PATCH",
+		Headers: map[string]string{
+			"Content-Type": "application/json; charset=utf-8",
+		},
 		Params: map[string]string{
 			"chat_id": req.ChatID,
 		},

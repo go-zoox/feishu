@@ -45,6 +45,9 @@ func Search(client client.Client, cfg *SearchRequest) (resp *SearchResponse, err
 
 	err = client.Request(SearchAPI, &fetch.Config{
 		Method: fetch.POST,
+		Headers: map[string]string{
+			"Content-Type": "application/json; charset=utf-8",
+		},
 		Query: map[string]string{
 			"user_id_type": cfg.UserIDType,
 		},

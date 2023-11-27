@@ -30,6 +30,9 @@ type RetrieveResponse struct {
 func Retrieve(client client.Client, cfg *RetrieveRequest) (resp *RetrieveResponse, err error) {
 	err = client.Request(RetrieveAPI, &fetch.Config{
 		Method: "GET",
+		Headers: map[string]string{
+			"Content-Type": "application/json; charset=utf-8",
+		},
 		Params: map[string]string{
 			"department_id": cfg.DepartmentID,
 		},

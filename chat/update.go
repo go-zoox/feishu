@@ -111,6 +111,9 @@ type UpdateResponse struct {
 func Update(client client.Client, req *UpdateRequest) (resp *UpdateResponse, err error) {
 	err = client.Request(UpdateAPI, &fetch.Config{
 		Method: "PUT",
+		Headers: map[string]string{
+			"Content-Type": "application/json; charset=utf-8",
+		},
 		Params: map[string]string{
 			"chat_id": req.ChatID,
 		},

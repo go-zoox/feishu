@@ -66,6 +66,9 @@ type GetAnnouncementResponse struct {
 func GetAnnouncement(client client.Client, req *GetAnnouncementRequest) (resp *GetAnnouncementResponse, err error) {
 	err = client.Request(GetAnnouncementAPI, &fetch.Config{
 		Method: "GET",
+		Headers: map[string]string{
+			"Content-Type": "application/json; charset=utf-8",
+		},
 		Params: map[string]string{
 			"chat_id": req.ChatID,
 		},

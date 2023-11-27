@@ -18,6 +18,9 @@ type GetBotInfoResponse struct {
 func GetBotInfo(client client.Client) (resp *GetBotInfoResponse, err error) {
 	err = client.Request(GetBotInfoAPI, &fetch.Config{
 		Method: "GET",
+		Headers: map[string]string{
+			"Content-Type": "application/json; charset=utf-8",
+		},
 	}, &resp, "bot")
 	return
 }

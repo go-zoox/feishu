@@ -33,6 +33,9 @@ type SendResponse struct {
 func Send(client client.Client, cfg *SendRequest) (resp *SendResponse, err error) {
 	err = client.Request(SendAPI, &fetch.Config{
 		Method: "POST",
+		Headers: map[string]string{
+			"Content-Type": "application/json; charset=utf-8",
+		},
 		Query: map[string]string{
 			"receive_id_type": cfg.ReceiveIDType,
 		},

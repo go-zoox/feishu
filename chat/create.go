@@ -98,6 +98,9 @@ type CreateResponse struct {
 func Create(client client.Client, req *CreateRequest) (resp *CreateResponse, err error) {
 	err = client.Request(CreateAPI, &fetch.Config{
 		Method: "POST",
+		Headers: map[string]string{
+			"Content-Type": "application/json; charset=utf-8",
+		},
 		Body: map[string]any{
 			"name":                     req.Name,
 			"description":              req.Description,

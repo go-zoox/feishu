@@ -61,6 +61,9 @@ func List(client client.Client, cfg *ListRequest) (resp *ListResponse, err error
 
 	err = client.Request(ListAPI, &fetch.Config{
 		Method: fetch.GET,
+		Headers: map[string]string{
+			"Content-Type": "application/json; charset=utf-8",
+		},
 		Params: map[string]string{
 			"department_id": cfg.DepartmentID,
 		},

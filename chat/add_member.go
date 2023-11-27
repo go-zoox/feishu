@@ -34,6 +34,9 @@ type AddMemberResponse struct {
 func AddMember(client client.Client, req *AddMemberRequest) (resp *AddMemberResponse, err error) {
 	err = client.Request(AddMemberAPI, &fetch.Config{
 		Method: "POST",
+		Headers: map[string]string{
+			"Content-Type": "application/json; charset=utf-8",
+		},
 		Params: map[string]string{
 			"chat_id": req.ChatID,
 		},

@@ -29,6 +29,9 @@ type RemoveMemberResponse struct {
 func RemoveMember(client client.Client, req *RemoveMemberRequest) (resp *RemoveMemberResponse, err error) {
 	err = client.Request(RemoveMemberAPI, &fetch.Config{
 		Method: "DELETE",
+		Headers: map[string]string{
+			"Content-Type": "application/json; charset=utf-8",
+		},
 		Params: map[string]string{
 			"chat_id": req.ChatID,
 		},

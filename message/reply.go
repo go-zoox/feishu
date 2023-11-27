@@ -29,6 +29,9 @@ type ReplyResponse struct {
 func Reply(client client.Client, cfg *ReplyRequest) (resp *ReplyResponse, err error) {
 	err = client.Request(ReplyAPI, &fetch.Config{
 		Method: "POST",
+		Headers: map[string]string{
+			"Content-Type": "application/json; charset=utf-8",
+		},
 		Params: map[string]string{
 			"message_id": cfg.MessageID,
 		},

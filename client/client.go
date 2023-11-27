@@ -50,7 +50,7 @@ func (c *client) Request(resource string, request *fetch.Config, response interf
 		SetConfig(request).
 		SetMethod(request.Method).
 		SetURL(resource).
-		SetContentType("application/json; charset=utf-8").
+		// SetContentType("application/json; charset=utf-8").
 		SetBearToken(c.accessToken)
 
 	resp, err := client.Send()

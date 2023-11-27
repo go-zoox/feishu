@@ -57,7 +57,10 @@ func List(client client.Client, cfg *ListRequest) (resp *ListResponse, err error
 
 	err = client.Request(ListAPI, &fetch.Config{
 		Method: fetch.GET,
-		Query:  query,
+		Headers: map[string]string{
+			"Content-Type": "application/json; charset=utf-8",
+		},
+		Query: query,
 	}, &resp)
 	return
 }
