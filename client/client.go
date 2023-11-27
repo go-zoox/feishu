@@ -11,6 +11,8 @@ import (
 
 type Client interface {
 	Request(resource string, request *fetch.Config, response interface{}, dataKey ...string) error
+	//
+	CreateFetch(resource string, request *fetch.Config) (*fetch.Fetch, error)
 }
 
 type Config struct {
@@ -35,23 +37,30 @@ type client struct {
 	accessToken string
 }
 
+func (c *client) CreateFetch(resource string, request *fetch.Config) (*fetch.Fetch, error) {
+	if err := c.refreshAccessToken(nil); err != nil {
+		return nil, fmt.Errorf("refresh access token failed(1): %s", err)
+	}
+
+	return fetch.
+		Create(c.cfg.BaseURI).
+		SetConfig(request).
+		SetMethod(request.Method).
+		SetURL(resource).
+		// SetContentType("application/json; charset=utf-8").
+		SetBearToken(c.accessToken), nil
+}
+
 func (c *client) Request(resource string, request *fetch.Config, response interface{}, dataKey ...string) error {
 	dataKeyX := "data"
 	if len(dataKey) > 0 {
 		dataKeyX = dataKey[0]
 	}
 
-	if err := c.refreshAccessToken(nil); err != nil {
-		return fmt.Errorf("refresh access token failed(1): %s", err)
+	client, err := c.CreateFetch(resource, request)
+	if err != nil {
+		return fmt.Errorf("create fetch failed: %s", err)
 	}
-
-	client := fetch.
-		Create(c.cfg.BaseURI).
-		SetConfig(request).
-		SetMethod(request.Method).
-		SetURL(resource).
-		// SetContentType("application/json; charset=utf-8").
-		SetBearToken(c.accessToken)
 
 	resp, err := client.Send()
 	if err != nil {

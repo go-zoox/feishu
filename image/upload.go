@@ -7,6 +7,7 @@ import (
 	"github.com/go-zoox/fetch"
 )
 
+// doc: https://open.feishu.cn/document/server-docs/im-v1/image/create
 const UploadAPI = "/open-apis/im/v1/images"
 
 type UploadRequest struct {
