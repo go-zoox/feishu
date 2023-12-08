@@ -2,6 +2,7 @@ package feishu
 
 import (
 	"github.com/go-zoox/feishu/bot"
+	"github.com/go-zoox/feishu/chat"
 	"github.com/go-zoox/feishu/client"
 	"github.com/go-zoox/feishu/contact"
 	"github.com/go-zoox/feishu/event"
@@ -21,6 +22,7 @@ type Client interface {
 	Message() message.Message
 	Event(request *event.EventRequest) event.Event
 	Image() image.Image
+	Chat() chat.Chat
 }
 
 type Config = client.Config
@@ -52,4 +54,8 @@ func (c *feishu) Bot() bot.Bot {
 
 func (c *feishu) Image() image.Image {
 	return image.New(c.sdk)
+}
+
+func (c *feishu) Chat() chat.Chat {
+	return chat.New(c.sdk)
 }
