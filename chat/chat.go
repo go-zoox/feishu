@@ -5,9 +5,13 @@ import "github.com/go-zoox/feishu/client"
 type Chat interface {
 	Create(req *CreateRequest) (resp *CreateResponse, err error)
 	List(cfg *ListRequest) (resp *ListResponse, err error)
+	Update(cfg *UpdateRequest) (resp *UpdateResponse, err error)
 
 	//
 	ListALL() (chats []ChatEntity, err error)
+
+	AddMember(cfg *AddMemberRequest) (resp *AddMemberResponse, err error)
+	RemoveMember(cfg *RemoveMemberRequest) (resp *RemoveMemberResponse, err error)
 }
 
 type chat struct {
@@ -28,8 +32,20 @@ func (i *chat) List(cfg *ListRequest) (resp *ListResponse, err error) {
 	return List(i.client, cfg)
 }
 
+func (i *chat) Update(cfg *UpdateRequest) (resp *UpdateResponse, err error) {
+	return Update(i.client, cfg)
+}
+
 func (i *chat) ListALL() (chats []ChatEntity, err error) {
 	return ListALL(i.client)
+}
+
+func (i *chat) AddMember(cfg *AddMemberRequest) (resp *AddMemberResponse, err error) {
+	return AddMember(i.client, cfg)
+}
+
+func (i *chat) RemoveMember(cfg *RemoveMemberRequest) (resp *RemoveMemberResponse, err error) {
+	return RemoveMember(i.client, cfg)
 }
 
 type ChatEntity struct {

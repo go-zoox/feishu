@@ -7,7 +7,7 @@ type User interface {
 	Retrieve(cfg *RetrieveRequest) (resp *RetrieveResponse, err error)
 
 	//
-	ListAll() (users []UserEntity, err error)
+	ListALL(cfg *ListALLRequest) (users []UserEntity, err error)
 	Search(cfg *SearchRequest) (resp *SearchResponse, err error)
 	GetUnionIDByEmail(email string) (string, error)
 	GetUnionIDByMobile(mobile string) (string, error)
@@ -31,8 +31,8 @@ func (u *user) Retrieve(cfg *RetrieveRequest) (resp *RetrieveResponse, err error
 	return Retrieve(u.client, cfg)
 }
 
-func (u *user) ListAll() (users []UserEntity, err error) {
-	return ListAll(u.client)
+func (u *user) ListALL(cfg *ListALLRequest) (users []UserEntity, err error) {
+	return ListALL(u.client, &ListALLRequest{})
 }
 
 func (u *user) Search(cfg *SearchRequest) (resp *SearchResponse, err error) {

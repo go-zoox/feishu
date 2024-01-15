@@ -62,7 +62,7 @@ type UserEntity struct {
 	WorkStation string `json:"work_station"`
 
 	// 入职时间
-	JoinTime int `json:"join_time"`
+	JoinTime int64 `json:"join_time"`
 
 	// 是否是租户超级管理员
 	IsTenantManager bool `json:"is_tenant_manager"`
@@ -88,25 +88,40 @@ type UserEntity struct {
 	// 企业邮箱，请先确保已在管理后台启用飞书邮箱服务
 	EnterpriseEmail string `json:"enterprise_email"`
 
+	// 数据驻留地
+	Geo string `json:"geo"`
+
 	// 职务
 	JobTitle string `json:"job_title"`
 
+	// 职级ID
+	JobLevelID string `json:"job_level_id"`
+
+	// 序列ID
+	JobFamilyID string `json:"job_family_id"`
+
+	// 分配给用户的席位ID列表
+	SubscriptionIDs []string `json:"subscription_ids"`
+
+	// 用户席位列表
+	Subscriptions []UserEntitySubscription `json:"subscriptions"`
+
 	// 是否暂停用户
-	IsFronzen bool `json:"is_fronzen"`
+	IsFrozen bool `json:"is_frozen"`
 }
 
 type UserEntityStatus struct {
 	// 是否暂停
-	IsFronzen bool `json:"is_fronzen"`
+	IsFrozen bool `json:"is_frozen"`
 
 	// 是否离职
 	IsResigned bool `json:"is_resigned"`
 
 	// 是否激活
-	IsActivatd bool `json:"is_ctivatd"`
+	IsActivatd bool `json:"is_activated"`
 
 	// 是否主动退出，主动退出一段时间后用户会自动转为已离职
-	IsExisted bool `json:"is_existed"`
+	IsExited bool `json:"is_exited"`
 
 	// 是否未加入，需要用户自主确认才能加入团队
 	IsUnjoin bool `json:"is_unjoin"`
@@ -136,6 +151,9 @@ type UserEntityOrder struct {
 
 	// 用户所属的多个部门间的排序，数值越大，排序越靠前
 	DepartmentOrder int `json:"department_order"`
+
+	// 标识用户的唯一主部门，主部门为用户所属部门中排序第一的部门(department_order最大)
+	IsPrimaryDepartment bool `json:"is_primary_department"`
 }
 
 type UserEntityCustomAttr struct {
@@ -175,4 +193,31 @@ type UserEntityCustomAttr struct {
 			Type int `json:"type"`
 		} `json:"generic_user"`
 	} `json:"value"`
+}
+
+type UserEntitySubscription struct {
+	// 席位ID
+	SubscriptionID string `json:"subscription_id"`
+
+	// 席位名称
+	ProductName string `json:"product_name"`
+
+	// license_plan_key
+	LicensePlanKey string `json:"license_plan_key"`
+
+	// 国际化名称
+	I18nName struct {
+		// 中文
+		ZhCN string `json:"zh_cn"`
+		// 英文
+		EnUS string `json:"en_us"`
+		// 日文
+		JaJP string `json:"ja_jp"`
+	} `json:"i18n_name"`
+
+	// 席位起始时间
+	StartTime int64 `json:"start_time"`
+
+	// 席位结束时间
+	EndTime int64 `json:"end_time"`
 }
